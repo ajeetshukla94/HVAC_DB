@@ -81,7 +81,7 @@ def render_default():
         if session_var["role"] == "admin":
             ret_page = "consolidation.html"
         return make_response(render_template(ret_page,msg = False, err = False, warn = False, role = session_var["role"]),200)     
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
     
 @app.route("/render_login", methods=["GET", "POST"])
 def render_login():
@@ -116,7 +116,7 @@ def render_login():
                                 msg = True, err = False, warn = False, role = account["role"]),200)
       else:
           flash('Invalid Credentials')
-          return make_response(render_template("login_page/login.html", msg = False, err = True, warn = False),403)
+          return make_response(render_template("LOGIN_PAGE/login.html", msg = False, err = True, warn = False),403)
     else:
         print('get request')
         
@@ -127,7 +127,7 @@ def add_user_page():
         session_var = session['user']
         role = session_var["role"]
         return make_response(render_template('ADMIN/add_user.html',role = role),200) 
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
     
 @app.route("/thermal_report")
 def thermal_report():
@@ -135,7 +135,7 @@ def thermal_report():
         session_var = session['user']
         role = session_var["role"]
         return make_response(render_template('HVAC_UI/Thermal.html',role = role),200) 
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
 
         
 @app.route('/logout')
@@ -145,7 +145,7 @@ def logout():
     global Selected_files
     Selected_file = None
     flash('Logout Successful')
-    return make_response(render_template("login_page/login.html",msg = True, err = False, warn = False, message='Logout Successful'),200)
+    return make_response(render_template("LOGIN_PAGE/login.html",msg = True, err = False, warn = False, message='Logout Successful'),200)
 
 
 @app.route("/submit_add_user" )    
@@ -190,7 +190,7 @@ def render_Air_velocity():
         return make_response(render_template('HVAC_UI/Air_velocity.html',grade_list=grade_list,        
                             company_list=company_name_list,equipment_list =equipment_list,
                             role = role),200)
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
     
     
 @app.route("/render_paotest")
@@ -202,7 +202,7 @@ def render_paotest():
         equipment_list = dbo.selected_instrument_dropdown("PAO_TEST",session_var['user']).SR_NO_ID.unique().tolist()
         return make_response(render_template('HVAC_UI/PAO.html',company_list=company_name_list,
                                 equipment_list =equipment_list, role = role),200)
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
     
 @app.route("/render_particle_count")
 def render_particle_count():
@@ -216,7 +216,7 @@ def render_particle_count():
     					     guidlance_list = guidlance_list  ,
     					     equipment_list = equipment_list,
                              condition_list = condition_list, role = role),200)
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
 
  
 @app.route("/get_available_directory", methods=['POST', 'GET'])
@@ -237,7 +237,7 @@ def get_available_directory():
              "end_date":str(datetime.datetime.today().strftime('%d/%m/%Y')),        
             }   
         return json.dumps(d)
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
     
  
 @app.route("/update_company_details", methods=['POST', 'GET'])
@@ -262,7 +262,7 @@ def update_company_details():
             "location":location,
         }
         return json.dumps(d)
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
     
     
 @app.route("/update_instument_details", methods=['POST', 'GET'])
@@ -298,7 +298,7 @@ def update_instument_details():
             "VALIDITY"        : VALIDITY,  
         }
         return json.dumps(d)
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
 
 
 
@@ -319,7 +319,7 @@ def update_grade():
             dict_list.append(thisdict)
         d = {"dict_list":dict_list,"error":"none"}
         return json.dumps(d)
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
 
 
 @app.route("/get_limits", methods=['POST', 'GET'])
@@ -365,7 +365,7 @@ def get_limits():
              "error":"none"}
         print(d)
         return json.dumps(d)
-    return make_response(render_template('login_page/login.html'),200)     
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)     
 
 
 @app.route("/submit_air_velocity")
@@ -463,7 +463,7 @@ def UpdateinstrumentDetails():
         equipment_details   = dbo.get_equipment()
         equipment_list      = equipment_details.to_dict('records')
         return make_response(render_template('ADMIN/UpdateinstrumentDetails.html',equipment_list  = equipment_list, role = role),200) 
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
  
 @app.route("/approve_instrument_request")
 def approve_instrument_request():
@@ -473,7 +473,7 @@ def approve_instrument_request():
         equipment_details   = dbo.get_penidng_for_approval_equipment()
         equipment_list      = equipment_details.to_dict('records')
         return make_response(render_template('ELOGBOOK/approve_instrument_request.html',equipment_list  = equipment_list, role = role),200) 
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
     
     
 @app.route("/elogbook")
@@ -484,7 +484,7 @@ def elogbook():
         logbook     = dbo.get_logBook()
         logbook     = logbook.to_dict('records')
         return make_response(render_template('ELOGBOOK/elogbook.html',logbook  = logbook, role = role),200) 
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
     
 
 @app.route("/request_instrument")
@@ -498,7 +498,7 @@ def request_instrument():
         equipment_list      = equipment_details.to_dict('records')
         return make_response(render_template('ELOGBOOK/request_instrument.html',
                              equipment_list=equipment_list,company_list=company_name_list, role = role),200) 
-    return make_response(render_template('login_page/login.html'),200)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)
     
 @app.route("/push_instrument_request")
 def push_instrument_request():
@@ -511,7 +511,7 @@ def push_instrument_request():
                                  observation['REMARK'],session_var['username'])
         d = {"error":"none"}
         return json.dumps(d) 
-    return make_response(render_template('login_page/login.html'),200)        
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)        
          
 ################################# End get approve and update instrument######################################     
    
@@ -526,7 +526,7 @@ def UpdateCompanyDetails():
         customer_details  = dbo.get_company_details()
         customer_list     = customer_details.to_dict('records')
         return make_response(render_template('ADMIN/UpdateCompanyDetails.html',customer_list  = customer_list, role = role),200) 
-    return make_response(render_template('login_page/login.html'),200)    
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)    
     
 @app.route("/submit_updateCompanyDetails" )    
 def submit_updateCompanyDetails():
