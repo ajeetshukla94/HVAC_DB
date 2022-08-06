@@ -1,0 +1,8 @@
+#serial_id_list_pao            = equipment_master[equipment_master['Type']=='PAO_TEST'].SR_NO_ID.unique().tolist()
+#serial_id_list_particle_count = equipment_master[equipment_master['Type']=='PARTICLE_COUNT'].SR_NO_ID.unique().tolist()
+#serial_id_list_air_velocity   = equipment_master[equipment_master['Type']=='AIR_VELOCITY'].SR_NO_ID.unique().tolist()
+
+#equipment_master['SR_NO_ID']  = equipment_master['SR_NO_ID'].astype(str)
+#equipment_master['DUE_DATE']  = equipment_master['DUE_DATE'].astype(str)
+#equipment_master['DONE_DATE'] = equipment_master['DONE_DATE'].astype(str)
+#equipment_master              = pd.read_excel(os.path.join(app.config['UPLOAD_FOLDER'],"equipment_master.xlsx"))
