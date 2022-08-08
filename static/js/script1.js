@@ -764,7 +764,7 @@ function add_users()
 		params_data : JSON.stringify(full_data)
 	}, function(result) 
 	{
-		alert("Users Added");		
+		alert("Users Added kindly note down usernam-"+result.username);		
 	});
 	
 }

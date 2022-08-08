@@ -175,8 +175,8 @@ def submit_add_user():
                            Kindly note done Login ID for Reference - {}
                            Regards \n
                            Ajeet Shukla :) :) :)""".format(fname,lname,role,username)
-            send_mail(subject,text,"","") 
-        d = {"error":"none",}   
+            #send_mail(subject,text,"","") 
+        d = {"error":"none","userID",username}   
         return json.dumps(d)
 #################################### End Login logout add user ######################################          
 @app.route("/render_Air_velocity")
