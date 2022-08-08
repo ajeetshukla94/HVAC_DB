@@ -79,7 +79,7 @@ def render_default():
         session_var = session['user']
         ret_page = "Air_velocity.html"
         if session_var["role"] == "admin":
-            ret_page = "consolidation.html"
+            ret_page = "ADMIN/UpdateCompanyDetails.html"
         return make_response(render_template(ret_page,msg = False, err = False, warn = False, role = session_var["role"]),200)     
     return make_response(render_template('LOGIN_PAGE/login.html'),200)
     
