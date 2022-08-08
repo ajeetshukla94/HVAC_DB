@@ -660,17 +660,18 @@ class Report_Genration:
     def generate_thermal_report(basic_details):
     
         stages                    = ["Cycle start","Sterlization start","sterlization end","cycle End"]
-        Test_started_on           = basic_details['started_on']
-        cycle_start_time_duration = basic_details['cycle_start_time_duration']
-        sterlization_duration     = basic_details['cycle_sterlization_duration']
-        cycle_end_duration        = basic_details['cycle_end_duration']
-        interval_time_in_second   = basic_details['interval_in_seconds']
-        cycle_start_range         = [basic_details['cycle_start_min'],basic_details['cycle_start_max']]
-        sterlization_range        = [basic_details['sterlization_min'],basic_details['sterlization_max']]
-        cycle_end_range           = [basic_details['cycle_end_min'],basic_details['cycle_end_max']]
-        number_of_sensor          = basic_details['number_of_sensor']
+        Test_started_on           = str(basic_details['started_on'])
+        cycle_start_time_duration = int(basic_details['cycle_start_time_duration'])
+        sterlization_duration     = int(basic_details['cycle_sterlization_duration'])
+        cycle_end_duration        = int(basic_details['cycle_end_duration'])
+        interval_time_in_second   = int(basic_details['interval_in_seconds'])
+        cycle_start_range         = [float(basic_details['cycle_start_min']),float(basic_details['cycle_start_max'])]
+        sterlization_range        = [float(basic_details['sterlization_min']),float(basic_details['sterlization_max'])]
+        cycle_end_range           = [float(basic_details['cycle_end_min']),float(basic_details['cycle_end_max'])]
+        number_of_sensor          = int(basic_details['number_of_sensor'])
         format_date               = datetime.datetime.strptime(Test_started_on, '%d-%m-%Y %H:%M:%S')
         Test_conducted_on         = str(format_date).split()[0]
+        print(Test_started_on)
         
         cycle_start_time = str(format_date).split()[1]
         sterlization_start_time = format_date + datetime.timedelta(minutes=cycle_start_time_duration)
@@ -737,9 +738,8 @@ class Report_Genration:
 
         working_directory = MYDIR + "/" "static/Report/THERMAL_REPORT/{}"
         final_working_directory = "static/Report/THERMAL_REPORT/thermal.xlsx"
-        file_name = "{}_PAO_REPORT_{}".format(room_name, str(datetime.datetime.today().strftime('%d_%m_%Y')))
-        if not os.path.exists(working_directory.format(compan_name)):
-            os.mkdir(working_directory.format(compan_name));
+        file_name = "thermal.xlsx"#.format(str(datetime.datetime.today().strftime('%d_%m_%Y')))
+        
 
         store_location = final_working_directory
         final_working_directory = MYDIR + "/"+final_working_directory
@@ -757,6 +757,6 @@ class Report_Genration:
         temp_df
         temp_df.to_excel(final_working_directory,index=False)
 
-
+        return file_name, store_location
 
 

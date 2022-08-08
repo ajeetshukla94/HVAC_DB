@@ -387,6 +387,17 @@ def submit_air_velocity():
         d = {"error":"none","file_name":file_name,"file_path":file_path}
        
         return json.dumps(d)    
+        
+@app.route("/submit_thermal_report")
+def submit_thermal_report():
+    if 'user' in session:
+        data          = request.args.get('params_data')
+        basic_details = json.loads(data)        
+        session_var   = session['user']		
+        file_name,file_path = Report_Genration.generate_thermal_report(basic_details)           
+        d = {"error":"none","file_name":file_name,"file_path":file_path}
+       
+        return json.dumps(d) 
     
 @app.route("/submit_data_pao")
 def submit_data_pao():
