@@ -77,7 +77,7 @@ def send_mail(subject,text,files,file_name,isTls=True):
 def render_default():
     if 'user' in session:
         session_var = session['user']
-        ret_page = "Air_velocity.html"
+        ret_page = "HVAC_UI/Air_velocity.html"
         if session_var["role"] == "admin":
             ret_page = "ADMIN/UpdateCompanyDetails.html"
         return make_response(render_template(ret_page,msg = False, err = False, warn = False, role = session_var["role"]),200)     
