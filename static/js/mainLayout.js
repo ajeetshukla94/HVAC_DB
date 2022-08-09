@@ -3,7 +3,7 @@ class MyHeader extends HTMLElement{
 	connectedCallback()	{
 		this.innerHTML ='<div id="header"> \
 		<img src="static/images/ppe.png" id="header-img"> \
-		<h2 id="header-text">HVAC SOLUTION</h2> \
+		<h2 id="header-text">PIN POINT ENGINEERS</h2> \
 		</div> \
 		<div class="navbar"> \
 		<a id = "request_instrumnet_link" href="/request_instrument">REQUEST INSTRUMENT</a> \
