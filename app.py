@@ -100,9 +100,9 @@ def render_login():
           session_var = {"user": l_id, "role": account["role"],"username": account["username"]}
           session['user'] = session_var
           print('Login Successful')
-          print(dbo.selected_instrument_dropdown("AIR_VELOCITY",session_var['user']))
-          company_name_list             = dbo.selected_instrument_dropdown("AIR_VELOCITY",session_var['user']).COMPANY_NAME.unique().tolist()
-          equipment_list                = dbo.selected_instrument_dropdown("AIR_VELOCITY",session_var['user']).SR_NO_ID.unique().tolist()
+          print(dbo.selected_instrument_dropdown("AIR_VELOCITY",session_var['username']))
+          company_name_list             = dbo.selected_instrument_dropdown("AIR_VELOCITY",session_var['username']).COMPANY_NAME.unique().tolist()
+          equipment_list                = dbo.selected_instrument_dropdown("AIR_VELOCITY",session_var['username']).SR_NO_ID.unique().tolist()
         
           if account["role"] == "admin":
               ret_page = "ADMIN/add_user.html"
@@ -185,8 +185,8 @@ def render_Air_velocity():
         session_var = session['user']
         role = session_var["role"]
         #customer_details              = dbo.get_company_details()        
-        company_name_list             = dbo.selected_instrument_dropdown("AIR_VELOCITY",session_var['user']).COMPANY_NAME.unique().tolist()
-        equipment_list                = dbo.selected_instrument_dropdown("AIR_VELOCITY",session_var['user']).SR_NO_ID.unique().tolist()
+        company_name_list             = dbo.selected_instrument_dropdown("AIR_VELOCITY",session_var['username']).COMPANY_NAME.unique().tolist()
+        equipment_list                = dbo.selected_instrument_dropdown("AIR_VELOCITY",session_var['username']).SR_NO_ID.unique().tolist()
         return make_response(render_template('HVAC_UI/Air_velocity.html',grade_list=grade_list,        
                             company_list=company_name_list,equipment_list =equipment_list,
                             role = role),200)
@@ -198,8 +198,8 @@ def render_paotest():
     if 'user' in session:
         session_var = session['user']
         role = session_var["role"]
-        company_name_list             = dbo.selected_instrument_dropdown("PAO_TEST",session_var['user']).COMPANY_NAME.unique().tolist()
-        equipment_list = dbo.selected_instrument_dropdown("PAO_TEST",session_var['user']).SR_NO_ID.unique().tolist()
+        company_name_list             = dbo.selected_instrument_dropdown("PAO_TEST",session_var['username']).COMPANY_NAME.unique().tolist()
+        equipment_list = dbo.selected_instrument_dropdown("PAO_TEST",session_var['username']).SR_NO_ID.unique().tolist()
         return make_response(render_template('HVAC_UI/PAO.html',company_list=company_name_list,
                                 equipment_list =equipment_list, role = role),200)
     return make_response(render_template('LOGIN_PAGE/login.html'),200)
@@ -210,8 +210,8 @@ def render_particle_count():
         session_var = session['user']
         role = session_var["role"]
         #customer_details              = dbo.get_company_details()
-        company_name_list             = dbo.selected_instrument_dropdown("PARTICLE_COUNT",session_var['user']).COMPANY_NAME.unique().tolist() 
-        equipment_list                = dbo.selected_instrument_dropdown("PARTICLE_COUNT",session_var['user']).SR_NO_ID.unique().tolist()
+        company_name_list             = dbo.selected_instrument_dropdown("PARTICLE_COUNT",session_var['username']).COMPANY_NAME.unique().tolist() 
+        equipment_list                = dbo.selected_instrument_dropdown("PARTICLE_COUNT",session_var['username']).SR_NO_ID.unique().tolist()
         return make_response(render_template('HVAC_UI/particle_count.html',company_list=company_name_list,
     					     guidlance_list = guidlance_list  ,
     					     equipment_list = equipment_list,
