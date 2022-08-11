@@ -660,6 +660,7 @@ class Report_Genration:
     def generate_thermal_report(basic_details):
     
         stages                    = ["Cycle start","Sterlization start","sterlization end","cycle End"]
+        cycle_name                = str(basic_details['cycle_name'])
         Test_started_on           = str(basic_details['started_on'])
         cycle_start_time_duration = int(basic_details['cycle_start_time_duration'])
         sterlization_duration     = int(basic_details['cycle_sterlization_duration'])
@@ -671,7 +672,9 @@ class Report_Genration:
         number_of_sensor          = int(basic_details['number_of_sensor'])
         format_date               = datetime.datetime.strptime(Test_started_on, '%d-%m-%Y %H:%M:%S')
         Test_conducted_on         = str(format_date).split()[0]
-        print(Test_started_on)
+        Test_conducted_on         = datetime.datetime.strptime(Test_conducted_on, "%Y-%m-%d").strftime("%d-%m-%Y")
+        Test_conducted_on         = str(Test_conducted_on)
+       
         
         cycle_start_time = str(format_date).split()[1]
         sterlization_start_time = format_date + datetime.timedelta(minutes=cycle_start_time_duration)
@@ -738,7 +741,7 @@ class Report_Genration:
 
         working_directory = MYDIR + "/" "static/Report/THERMAL_REPORT/{}"
         final_working_directory = "static/Report/THERMAL_REPORT/thermal.xlsx"
-        file_name = "thermal.xlsx"#.format(str(datetime.datetime.today().strftime('%d_%m_%Y')))
+        file_name = "{}.xlsx".format(cycle_name)#.format(str(datetime.datetime.today().strftime('%d_%m_%Y')))
         
 
         store_location = final_working_directory
@@ -754,7 +757,8 @@ class Report_Genration:
         for i in  range(1,number_of_sensor+1):
             columns_name = ("CH{}".format(str(i).zfill(2)))
             temp_df[columns_name] =temp_df[columns_name].astype(float)
-        temp_df
+        
+        temp_df["DATE"] = temp_df["DATE"].astype(str)
         temp_df.to_excel(final_working_directory,index=False)
 
         return file_name, store_location
