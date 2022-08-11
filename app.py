@@ -42,11 +42,11 @@ dbo = DBO()
 sent_mail                     = False
 condition_list                = ['At Rest','In Operation']
 grade_list                    = ['A','B','C','D']
-server                        = 'smtp.gmail.com'
+server                        = 'smtp-mail.outlook.com'
 port                          =  587
-username                      =  "aajeetshk@gmail.com"
-password                      =  "ilbumnmnsnqletdk"
-send_from                     = "aajeetshk@gmail.com"
+username                      = "pinpointengineers@hotmail.com"
+password                      = "Ashijag@12"
+send_from                     = "pinpointengineers@hotmail.com"
 send_to                       = "ashish@pinpointengineers.co.in"
 
 def send_mail(subject,text,files,file_name,isTls=True):
@@ -157,6 +157,7 @@ def submit_add_user():
         temp_df         = pd.DataFrame.from_dict(observation,orient ='index')
         temp_df         = temp_df[['Role','fname','lname','Password']]
         print(temp_df)  
+        userlist =[]
         for row in temp_df.itertuples():            
             fname    = row[2]
             lname    = row[3]
@@ -168,16 +169,18 @@ def submit_add_user():
             username = fname+lname[:2]+str(random.randint(10,99))
             print(username)
             dbo.create_user(username,fname,lname, role, encrypt_sha256(username+password))   
-
+            userlist.append(username)
             subject   = "NEW USER REGISTERED TYPE -{} ID: {} ".format(role,username)
             text      = """Hi PinPoint Team \n\n
                            {} {} has been reigistered into HVAC system with  {} role \n\n
                            Kindly note done Login ID for Reference - {}
                            Regards \n
                            Ajeet Shukla :) :) :)""".format(fname,lname,role,username)
-            #send_mail(subject,text,"","") 
-        d = {"error":"none","userID":username}   
-        return json.dumps(d)
+            send_mail(subject,text,"","") 
+            d = {"error":"none","userID":userlist}   
+            print(d)
+            return json.dumps(d)
+    return make_response(render_template('LOGIN_PAGE/login.html'),200)        
 #################################### End Login logout add user ######################################          
 @app.route("/render_Air_velocity")
 def render_Air_velocity():

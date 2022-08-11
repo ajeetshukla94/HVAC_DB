@@ -764,7 +764,7 @@ function add_users()
 		params_data : JSON.stringify(full_data)
 	}, function(result) 
 	{
-		alert("Users Added kindly note down usernam-"+result.username);		
+		alert("Users Added kindly note down usernam-"+result.userID);		
 	});
 	
 }
@@ -945,6 +945,13 @@ function thermal_submit(){
 	
 	var frame_list = document.getElementsByClassName("frame");
 	var basic_details = {};
+	
+	if ($('#cycle_name').val()=="")
+	{
+		alert("Enter Cycle Name");
+		return;
+	}
+	basic_details['cycle_name'] =$('#cycle_name').val();
 	
 	if ($('#started_on').val()=="")
 	{
