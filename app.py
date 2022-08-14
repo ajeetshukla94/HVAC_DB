@@ -45,7 +45,7 @@ grade_list                    = ['A','B','C','D']
 server                        = 'smtp-mail.outlook.com'
 port                          =  587
 username                      = "pinpointengineers@hotmail.com"
-password                      = "Ashijag@12"
+password                      = "#############@12"
 send_from                     = "pinpointengineers@hotmail.com"
 send_to                       = "ashish@pinpointengineers.co.in"
 
@@ -179,7 +179,7 @@ def submit_add_user():
                            Kindly note done Login ID for Reference - {}
                            Regards \n
                            Ajeet Shukla :) :) :)""".format(fname,lname,role,username)
-            send_mail(subject,text,"","") 
+            #send_mail(subject,text,"","") 
             d = {"error":"none","userID":userlist}   
             print(d)
             return json.dumps(d)
