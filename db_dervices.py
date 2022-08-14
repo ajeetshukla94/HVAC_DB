@@ -19,7 +19,7 @@ def convert_into_binary(file_path):
 class DBO:
     def __init__(self):
         try:
-            self.conn = sqlite3.connect('test.db', check_same_thread=False)
+            self.conn = sqlite3.connect('static/db/test.db', check_same_thread=False)
             self.cur = self.conn.cursor()
             # check if table exists
             print('[*] Checking if USERS table exists in the database:')
@@ -36,22 +36,22 @@ class DBO:
         except Exception as e:
             print(e)
             
-            
+            EMAILID,STATUS
             
     def init_table(self):
         try:
             self.cur.execute(
                 """CREATE TABLE USERS(USERNAME VARCHAR(30),FNAME VARCHAR(30),LNAME VARCHAR(30),
-                ROLE VARCHAR(15), PASSWORD VARCHAR(64));""")
+                ROLE VARCHAR(15), PASSWORD VARCHAR(64) ,EMAILID VARCHAR(64),STATUS VARCHAR(64));""")
             self.conn.commit()
             print('[+] USERS table created')
             
-            self.conn.execute("""INSERT INTO USERS (USERNAME,FNAME,LNAME,ROLE,PASSWORD)
-                         VALUES ('admin', 'admin','admin', 'admin', '205f0f3ff2d9531c54cb61ceb7bed9db11cb7a9a56b654d8d1efc6982f50122e')""")
+            self.conn.execute("""INSERT INTO USERS (USERNAME,FNAME,LNAME,ROLE,PASSWORD,EMAILID,STATUS)
+                         VALUES ('admin', 'admin','admin', 'admin', '205f0f3ff2d9531c54cb61ceb7bed9db11cb7a9a56b654d8d1efc6982f50122e',"pinpointengineers@hotmail.com" ,'ACTIVE')""")
             self.conn.commit()
             print('[+] Admin user created')
-            self.conn.execute("""INSERT INTO USERS (USERNAME,FNAME,LNAME,ROLE,PASSWORD)
-                         VALUES ('analyst', 'analyst', 'analyst', 'analyst', '166b29b136583748cdeda22b3abeb11aecc60d8d2fd0b9046011b31cebc0fdc4')""")
+            self.conn.execute("""INSERT INTO USERS (USERNAME,FNAME,LNAME,ROLE,PASSWORD,EMAILID,STATUS)
+                         VALUES ('analyst', 'analyst', 'analyst', 'analyst', '166b29b136583748cdeda22b3abeb11aecc60d8d2fd0b9046011b31cebc0fdc4',"pinpointengineers@hotmail.com" ,'ACTIVE')""")
             self.conn.commit()
             print('[+] Analyst user created')
             
@@ -116,20 +116,40 @@ class DBO:
             
             
             
+            query= """CREATE TABLE ExpenseMaster        
+            (   request_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Expensetype varchar(255),
+                company_name varchar(255),
+                Description varchar(255),
+                Amount_requested varchar(255),
+                Amount_approved varchar(255),
+                userID varchar(255),
+                userName varchar(255),
+                date varchar(255),
+                STATUS varchar(255),
+                updatedBY varchar(255))"""
+            self.conn.execute(query)
+            self.conn.commit()
+            
+            print('[+] ExpenseMaster Table users created')
+            
+            
+            
             
             return 0
         except Exception as e:
             return e
         
         
-    def create_user(self, username,fname,lname, role, password):
+    def create_user(self, username,fname,lname, role, password,emailid):
         try:             
-            query = """INSERT INTO USERS ( USERNAME ,FNAME,LNAME ,ROLE, PASSWORD)
-                         VALUES ( '{}','{}','{}','{}','{}')""".format(username,fname,lname,role,password)
+            query = """INSERT INTO USERS ( USERNAME ,FNAME,LNAME ,ROLE, PASSWORD,EMAILID,STATUS)
+                         VALUES ( '{}','{}','{}','{}','{}','{}','{}')""".format(username,fname,lname,role,password,emailid,'ACTIVE')
             self.conn.execute(query)
             self.conn.commit()
             return 0
         except Exception as e:
+            print(e)
             return e
         
     
@@ -148,7 +168,7 @@ class DBO:
         
     def get_cred(self, username):
         try:
-            stmt = "SELECT ROLE, PASSWORD,FNAME,LNAME from USERS where USERNAME = '" + username + "'"
+            stmt = "SELECT ROLE, PASSWORD,FNAME,LNAME from USERS where status='ACTIVE' and USERNAME = '" + username + "'"
             cursor = self.conn.execute(stmt)
             ret_obj = {"role": "", "password": ""}
             for row in cursor:
@@ -170,7 +190,46 @@ class DBO:
             print("[+] Password updated :", self.conn.total_changes)
             return 0
         except Exception as e:
-            return e  
+            return e 
+    def update_user_details(self,basic_details):
+        try:
+            print(basic_details)
+            username  = basic_details['USERNAME']
+            role      = basic_details['ROLE']
+            FirstNAME = basic_details['FirstNAME']
+            LastNAME  = basic_details['LastNAME']
+            emaild    = basic_details['emaild']
+            status    = basic_details['STATUS']
+            print(role)
+            query ="""UPDATE USERS set 
+                    ROLE = '{}' ,FNAME = '{}' ,LNAME = '{}' ,EMAILID = '{}' ,STATUS = '{}' 
+                    where USERNAME = '{}'""".format(role,FirstNAME,LastNAME,emaild,status,username)
+            self.conn.execute(query)
+            self.conn.commit()
+            return 0
+        except Exception as e:
+            print(e)
+            return e 
+
+    def get_username(self):
+        try:
+            cursor = self.conn.execute("SELECT userName from USERS")
+            username_list = []
+            for row in cursor:
+                username_list.append(row[0])
+            return username_list
+        except Exception as e:
+            return e
+      
+    def get_user_detail_by_userID_sheet(self,userid):
+            stmt = "SELECT * from USERS where USERNAME='{}'".format(userid)    
+            cursor =self.conn.execute(stmt)
+            user_list = []
+            for row in cursor:
+                user_list.append(list(row))
+            user_frame = pd.DataFrame(user_list,columns = ['USERNAME','FNAME' ,'LNAME','ROLE' ,
+                       'PASSWORD' , 'EMAILID' ,'STATUS'])
+            return user_frame
             
     #################################### Start Of Euipment query #########################################################        
     def get_equipment(self):
@@ -359,5 +418,81 @@ class DBO:
             print('File inserted successfully')
         except sqlite3.Error as error:
             print("Failed to insert blob into the table")
+            
+            
+    ############################# Expense############################################################################
+    def raise_expense(self,temp_Df,userID,userName):
+        try:
+            for row in temp_Df.itertuples():
+                             
+                ts = time.time()
+                update_time = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')            
+                query = """INSERT INTO ExpenseMaster 
+                      (Expensetype ,company_name,Description ,
+                       Amount_requested , Amount_approved ,userID,
+                       userName,date,STATUS,updatedBY) 
+                       VALUES ( '{}','{}','{}',
+                               '{}','{}','{}',
+                               '{}','{}','{}','{}')""".format(row[1],row[2],row[3],
+                               row[4],"NA",userID,
+                               userName,update_time,"REQUESTED","NA")
+                self.conn.execute(query)
+                self.conn.commit()
+            
+        except Exception as e:
+            print(e)
+            return e 
+            
+    def get_expense_sheet(self,userid,status,Expensetype,company_name):
+            stmt = "SELECT * from ExpenseMaster where STATUS='{}'".format(status)    
+            if userid!="ALL":
+                stmt=stmt+" and userID='{}'".format(userid)    
+                
+            if status!="ALL":
+                stmt=stmt+" and STATUS='{}'".format(status)
+                
+            if Expensetype!="ALL":
+                stmt=stmt+" and Expensetype='{}'".format(Expensetype)
+                
+            if company_name!="ALL":
+                stmt=stmt+" and company_name='{}'".format(company_name)
+            cursor = self.conn.execute(stmt)
+            expense_list = []
+            for row in cursor:
+                expense_list.append(list(row))
+            expense_frame = pd.DataFrame(expense_list,columns = ['request_id','Expensetype' ,'company_name','Description' ,
+                       'Amount_requested' , 'Amount_approved' ,'userID',
+                       'userName','date','STATUS','updatedBY'])
+            expense_frame = expense_frame[['request_id','Expensetype' ,'company_name','Description' ,
+                                          'Amount_requested','Amount_approved','date','STATUS','updatedBY']]
+            return expense_frame
+            
+    def get_expense_sheet_by_user(self,userid):
+            stmt = "SELECT * from ExpenseMaster where userid='{}' ORDER BY STATUS DESC ".format(userid)               
+            cursor = self.conn.execute(stmt)
+            expense_list = []
+            for row in cursor:
+                expense_list.append(list(row))
+            expense_frame = pd.DataFrame(expense_list,columns = ['request_id','Expensetype' ,'company_name','Description' ,
+                       'Amount_requested' , 'Amount_approved' ,'userID',
+                       'userName','date','STATUS','updatedBY'])
+            expense_frame = expense_frame[['request_id','Expensetype' ,'company_name','Description' ,
+                                          'Amount_requested','Amount_approved','date','STATUS','updatedBY']]
+            return expense_frame
+            
+            
+    def update_expense(self,temp_Df,updatedBy):
+        try:
+            for row in temp_Df.itertuples():
+                ts = time.time()
+                update_time = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')    
+                stmt = """update ExpenseMaster 
+                          set Amount_approved= '{}'  ,STATUS='{}' ,updatedBY='{}'
+                          where request_id='{}' """.format(row[2],row[3],updatedBy,row[1])
+                cursor = self.conn.execute(stmt)
+                self.conn.commit()           
+        except Exception as e:
+            return e         
+    
            
                 

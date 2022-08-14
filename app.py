@@ -136,6 +136,8 @@ def thermal_report():
         role = session_var["role"]
         return make_response(render_template('HVAC_UI/Thermal.html',role = role),200) 
     return make_response(render_template('LOGIN_PAGE/login.html'),200)
+    
+
 
         
 @app.route('/logout')
@@ -155,20 +157,21 @@ def submit_add_user():
         data            = json.loads(data)    
         observation     = data['observation']
         temp_df         = pd.DataFrame.from_dict(observation,orient ='index')
-        temp_df         = temp_df[['Role','fname','lname','Password']]
+        temp_df         = temp_df[['Role','fname','lname','Password','email']]
         print(temp_df)  
         userlist =[]
         for row in temp_df.itertuples():            
-            fname    = row[2]
-            lname    = row[3]
+            fname    = str(row[2]).strip()
+            lname    = str(row[3]).strip()
             role     = row[1]
             password = row[4]
+            email    = row[5]
             print(password)
             fname    = fname.lower()
             lname    = lname.lower()
             username = fname+lname[:2]+str(random.randint(10,99))
             print(username)
-            dbo.create_user(username,fname,lname, role, encrypt_sha256(username+password))   
+            dbo.create_user(username,fname,lname, role, encrypt_sha256(username+password),email)   
             userlist.append(username)
             subject   = "NEW USER REGISTERED TYPE -{} ID: {} ".format(role,username)
             text      = """Hi PinPoint Team \n\n
@@ -476,7 +479,10 @@ def UpdateinstrumentDetails():
         role        = session_var["role"]
         equipment_details   = dbo.get_equipment()
         equipment_list      = equipment_details.to_dict('records')
-        return make_response(render_template('ADMIN/UpdateinstrumentDetails.html',equipment_list  = equipment_list, role = role),200) 
+        tmptype             = pd.read_excel(os.path.join("static/inputData/",'eqp.xlsx'))
+        type                = tmptype.Type.unique().tolist()
+        Equipment_Name      = tmptype.Equipment_Name.unique().tolist()
+        return make_response(render_template('ADMIN/UpdateinstrumentDetails.html',Equipment_Namelst=Equipment_Name,eqtype=type,equipment_list  = equipment_list, role = role),200) 
     return make_response(render_template('LOGIN_PAGE/login.html'),200)
  
 @app.route("/approve_instrument_request")
@@ -550,10 +556,147 @@ def submit_updateCompanyDetails():
         observation     = data['observation']
         temp_df         = pd.DataFrame.from_dict(observation,orient ='index')
         temp_df         = temp_df[['COMPANY_NAME','ADDRESS','REPORT_NUMBER']]
+        temp_df['COMPANY_NAME'] = temp_df['COMPANY_NAME'].apply(lambda x : str(x).strip())
+        temp_df['ADDRESS'] = temp_df['ADDRESS'].apply(lambda x : str(x).strip())
         dbo.update_company_details(temp_df)
         d = {"error":"none",}   
         return json.dumps(d)
- #################### End  Update and get Company Details ################################################       
+ #################### End  Update and get Company Details ################################################    
+
+#### START Of Expense####################
+@app.route("/request_expense")
+def request_expense():
+    if 'user' in session:
+        session_var     = session['user']
+        customer_details  = dbo.get_company_details()
+        company_name_list = customer_details.COMPANY_NAME.unique().tolist()
+        expense_frame     = dbo.get_expense_sheet_by_user(session_var['user'])
+        expense_frame['Description'] = expense_frame['Description'].apply(lambda x : str(x).replace(' ','-'))
+        expense_frame['company_name'] = expense_frame['company_name'].apply(lambda x : str(x).replace(' ','-'))
+        expense_frame     = expense_frame.to_dict('records')
+        session_var = session['user']
+        role = session_var["role"]
+        return make_response(render_template('ELOGBOOK/request_expense.html',expense_record = expense_frame,company_list=company_name_list,role = role),200) 
+    return make_response(render_template('LOGIN_PAGE/login.html'),200) 
+    
+
+
+@app.route("/raise_expense")
+def raise_expense():
+    if 'user' in session:
+        session_var     = session['user']
+        role            = session_var["role"]         
+        data            = request.args.get('params_data')
+        data            = json.loads(data)    
+        observation     = data['observation']
+        temp_df         = pd.DataFrame.from_dict(observation,orient ='index')
+        temp_df         = temp_df[['Expensetype','company_name','Description','Amount']]
+        dbo.raise_expense(temp_df,session_var['user'],session_var['username'])       
+        d = {"error":"none"}
+        return json.dumps(d) 
+    return make_response(render_template('LOGIN_PAGE/login.html'),200) 
+    
+@app.route("/approve_expense")  
+def approve_expense ():
+    if 'user' in session:
+        usernameList  = dbo.get_username()
+        customer_details  = dbo.get_company_details()
+        company_name_list = customer_details.COMPANY_NAME.unique().tolist()
+        session_var = session['user']
+        role = session_var["role"]
+        return make_response(render_template('ELOGBOOK/approve_expense.html',company_list=company_name_list,usernameList=usernameList,role = role),200) 
+    return make_response(render_template('LOGIN_PAGE/login.html'),200) 
+
+@app.route("/update_user_details")  
+def update_user_details ():
+    if 'user' in session:
+        usernameList  = dbo.get_username()
+        session_var = session['user']
+        role = session_var["role"]
+        return make_response(render_template('ADMIN/update_user_details.html',usernameList=usernameList,role = role),200) 
+    return make_response(render_template('LOGIN_PAGE/login.html'),200) 
+    
+@app.route("/get_expense_sheet")  
+def get_expense_sheet ():
+    if 'user' in session:
+        data          = request.args.get('params_data')
+        basic_details = json.loads(data)  
+        expense_list  = dbo.get_expense_sheet(basic_details['USERNAME'],basic_details['STATUS'],
+                                    basic_details['Expensetype'],basic_details['company_name']
+                                ).to_dict('records')
+        print(expense_list)
+        session_var = session['user']
+        role = session_var["role"]
+        d = {"error":"none","expense_list":expense_list}
+        return json.dumps(d) 
+    return make_response(render_template('LOGIN_PAGE/login.html'),200) 
+    
+@app.route("/submit_expense")  
+def submit_expense():
+    if 'user' in session:   
+        session_var = session['user']
+        role = session_var["role"]    
+        data            = request.args.get('params_data')
+        data            = json.loads(data)    
+        observation     = data['observation']
+        temp_df         = pd.DataFrame.from_dict(observation,orient ='index')
+        temp_df         = temp_df[['request_id','Amount_approved','STATUS']]
+        dbo.update_expense(temp_df,session_var['username'])        
+        d = {"error":"none"}
+        return json.dumps(d) 
+    return make_response(render_template('LOGIN_PAGE/login.html'),200) 
+    
+@app.route("/get_user_detail_by_userID_sheet")  
+def get_user_detail_by_userID_sheet ():
+    if 'user' in session:
+        data          = request.args.get('params_data')
+        basic_details = json.loads(data)  
+        print(basic_details['USERNAME'])
+        user_detail  = dbo.get_user_detail_by_userID_sheet(basic_details['USERNAME']).to_dict('records') 
+        print(user_detail)
+        session_var = session['user']
+        role = session_var["role"]
+        d = {"error":"none","user_list":user_detail}
+        return json.dumps(d) 
+    return make_response(render_template('LOGIN_PAGE/login.html'),200) 
+    
+
+
+@app.route("/submit_update_user_details")  
+def submit_update_user_details ():
+    if 'user' in session:
+        data          = request.args.get('params_data')
+        basic_details = json.loads(data)  
+        dbo.update_user_details(basic_details) 
+        session_var = session['user']
+        role = session_var["role"]
+        d = {"error":"none"}
+        return json.dumps(d) 
+    return make_response(render_template('LOGIN_PAGE/login.html'),200) 
+
+#### END Of Expense####################
+
+
+    
+@app.route("/privilege_access")  
+def privilege_access_link ():
+    if 'user' in session:
+        session_var = session['user']
+        role = session_var["role"]
+        return make_response(render_template('ADMIN/privilege_access.html',role = role),200) 
+    return make_response(render_template('LOGIN_PAGE/login.html'),200) 
+    
+@app.route("/export_db")
+def export_db():
+    if 'user' in session:    
+        file_name = "test.db"
+        file_path = "static/db/test.db"
+        d = {"error":"none",
+             "file_name":file_name,
+             "file_path":file_path}
+             
+        return json.dumps(d) 
+    return make_response(render_template('LOGIN_PAGE/login.html'),200) 
 
 if __name__ == '__main__':
     app.debug = True

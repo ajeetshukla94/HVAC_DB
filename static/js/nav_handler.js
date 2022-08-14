@@ -10,7 +10,13 @@ function handle_nav_bar(role){
 			document.getElementById("add_user_page_link").style.display = "block";
 			document.getElementById("update_company_details_link").style.display = "block";
 			document.getElementById("update_instrument_link").style.display = "block";
-			document.getElementById("thermal_link").style.display = "block";	
+			document.getElementById("thermal_link").style.display = "none";
+			document.getElementById("request_expense_link").style.display = "none";	
+			document.getElementById("approve_expense_link").style.display = "block";	
+			document.getElementById("update_user_link").style.display = "block";	
+			document.getElementById("privilege_access_link").style.display = "block";
+
+			
 			
 	}
 	else if(role == "analyst")
@@ -24,7 +30,11 @@ function handle_nav_bar(role){
 			document.getElementById("add_user_page_link").style.display = "none";
 			document.getElementById("update_company_details_link").style.display = "none";
 			document.getElementById("update_instrument_link").style.display = "none";		
-            document.getElementById("thermal_link").style.display = "none";			
+            document.getElementById("thermal_link").style.display = "none";		
+			document.getElementById("request_expense_link").style.display = "block";
+		    document.getElementById("approve_expense_link").style.display = "none";
+			document.getElementById("update_user_link").style.display = "none";
+			document.getElementById("privilege_access_link").style.display = "none";
 	}
 	else if(role == "operation")
 	{
@@ -37,6 +47,10 @@ function handle_nav_bar(role){
 			document.getElementById("add_user_page_link").style.display = "none";
 			document.getElementById("update_company_details_link").style.display = "none";
 			document.getElementById("update_instrument_link").style.display = "none";	
-            document.getElementById("thermal_link").style.display = "block";				
+            document.getElementById("thermal_link").style.display = "block";	
+			document.getElementById("request_expense_link").style.display = "block";
+			document.getElementById("approve_expense_link").style.display = "none";
+			document.getElementById("update_user_link").style.display = "none";
+			document.getElementById("privilege_access_link").style.display = "none";
 	}
 }

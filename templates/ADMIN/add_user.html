@@ -37,14 +37,15 @@
 						<tr>
 							<th>Role</th>
 							<th>First Name</th>		
-							<th>Last Name</th>										
-							<th>Password</th>						
+							<th>Last Name</th>													
+							<th>Password</th>
+							<th>Email ID</th>														
 						</tr>
 						<tr>		
 							<td>
-							<select class="textfield" name="Role" id="report_type" style="width:100%">	
+							<select class="textfield" name="Role" id="Role" style="width:100%">	
 							<option value="admin">Admin</option>
-							<option value="analyst">Analyst</option>	
+							<option value="analyst">Service</option>	
 							<option value="operation">Operation</option>							
 							</select>
 							</td>
@@ -52,6 +53,9 @@
 							<td><input type="text" name="fname" value="" class="textfield"></td>
 							<td><input type="text" name="lname" value="" class="textfield"></td>
 							<td><input type="password" name="pwd" value="" class="textfield"></td>
+							<td><input type="text" name="email" value="pinpointengineers@hotmail.com" class="textfield"></td>
+							
+							
 							<td class="del_row"><img src = "static/images/delete.png" class="del_row_img" onclick="delete_row(this)"></td>
 						</tr>
 					</table>

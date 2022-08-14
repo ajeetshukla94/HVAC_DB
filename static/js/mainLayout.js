@@ -16,6 +16,10 @@ class MyHeader extends HTMLElement{
 		<a id = "update_company_details_link" href="/UpdateCompanyDetails">UPDATE COMPANY DETAILS</a>   \
 		<a id = "update_instrument_link" href="/UpdateinstrumentDetails">UPDATE INSTRUMENT DETAILS</a>   \
 		<a id = "thermal_link" href="/thermal_report">THERMAL REPORT</a>   \
+		<a id = "request_expense_link" href="/request_expense">REQUEST EXPENSE</a>   \
+		<a id = "approve_expense_link" href="/approve_expense">APPROVE EXPENSE</a>   \
+		<a id = "update_user_link" href="/update_user_details">UPDATE USER DETAILS</a>   \
+		<a id = "privilege_access_link" href="/privilege_access">PRIVILEGE ACCESS</a>   \
 		<a href="/logout">LOGOUT</a>  \
 		</div>\
 		'

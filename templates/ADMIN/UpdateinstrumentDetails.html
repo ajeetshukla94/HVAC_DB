@@ -52,37 +52,39 @@
 						
 						
 						<td>
-							<select class="textfield" name="Type" value=="{{equipment.Type}}" id="Type" style="width:100%">	
-							<option value="AIR_VELOCITY">AIR VELOCITY</option>
-							<option value="PAO_TEST">PAO TEST</option>	
-							<option value="PARTICLE_COUNT">PARTICLE COUNT</option>	
-							<option value="OTHER">OTHER</option>	
-							</select>
-						</td>
-						
-						<td>
-							<select class="textfield" name="EQUIPMENT_NAME" value=="{{equipment.EQUIPMENT_NAME}}" id="EQUIPMENT_NAME" style="width:100%">	
-							<option value="VANE TYPE ANEMOETER">VANE TYPE ANEMOETER</option>
-							<option value="Aerosol Photometer ">Aerosol Photometer</option>	
-							<option value="Partical Counter ">Partical Counter </option>	
-							<option value="Keyboard">Keyboard</option>
-							<option value="Mouse">Mouse</option>
-							<option value="Laptop">Laptop</option>
-							</select>
-						</td>
-						
-						
-						<td>
-							<select class="textfield" name="MAKE" value=="{{equipment.MAKE}}" id="MAKE" style="width:100%">	
-							<option value="METRAVI">METRAVI</option>
-							<option value="INDI">INDI</option>
-							<option value="HSTENI">HSTENI</option>	
-							<option value="TEC Service">TEC Service </option>
-							<option value="TSI">TSI</option>
-							<option value="HP">HP</option>
-							<option value="DELL">DELL</option>
+							<select class="textfield" name="Type" value id="Type" style="width:100%">
+
 							
+							{%for equipment_category  in eqtype%}
+							{%if equipment_category ==equipment.Type%}
+							  <option value="{{equipment_category}}" selected>{{equipment_category}}</option>							  
+							{%else%}
+							  <option value="{{equipment_category}}">{{equipment_category}}</option>
+							{%endif%}
+							{% endfor %}
+								
 							</select>
+						</td>
+						
+						<td>
+							<select class="textfield" type="text"  class="textfield" name="EQUIPMENT_NAME" id="EQUIPMENT_NAME" style="width:100%">	
+							{%for equipment_category  in Equipment_Namelst%}
+							{%if equipment_category ==equipment.EQUIPMENT_NAME%}
+							  <option value="{{equipment_category}}" selected>{{equipment_category}}</option>							  
+							{%else%}
+							  <option value="{{equipment_category}}">{{equipment_category}}</option>
+							{%endif%}
+							{% endfor %}
+								
+							</select>
+						
+						
+						</td>
+						
+						
+						<td>
+							<input type="text" name="MAKE" value="{{equipment.MAKE}}" id="MAKE" style="width:100%">								
+	
 						</td>
 							
 													
@@ -91,11 +93,14 @@
 							<td><input type="text" name="DONE_DATE" class="textfield" value="{{equipment.DONE_DATE}}" ></td>
 							<td><input type="text" name="DUE_DATE" class="textfield" value="{{equipment.DUE_DATE}}" ></td>
 							<td>
-								<select class="textfield" name="approve_deny" value="{{equipment.STATUS}}" id="approve_deny" style="width:100%">	
-									<option value="REQUESTED">REQUESTED</option>
-									<option value="APPROVED">APPROVE</option>
-									<option value="AVAILABLE">AVAILABLE</option>										
-									<option value="CLOSED">CLOSE</option>										
+								<select class="textfield" name="approve_deny" id="approve_deny" style="width:100%">	
+							    {%for equipment_category in ['REQUESTED','APPROVED','AVAILABLE','CLOSE'] %}
+								{%if equipment_category==equipment.STATUS%}
+								  <option value="{{equipment_category}}" selected>{{equipment_category}}</option>							  
+								{%else%}
+								  <option value="{{equipment_category}}">{{equipment_category}}</option>
+								{%endif%}
+								{% endfor %}									
 								</select>
 							</td>
 							<td><input type="text" name="ISSUED_TO" class="textfield" value="{{equipment.ISSUED_TO}}" disabled></td>

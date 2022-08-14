@@ -752,6 +752,7 @@ function add_users()
 		table_data['fname'] =tds[1].firstElementChild.value 
 		table_data['lname'] =tds[2].firstElementChild.value 
 		salted_pass = tds[3].firstElementChild.value
+		table_data['email'] = tds[4].firstElementChild.value
 		encrypted_pass = md5(salted_pass)	
 		table_data['Password'] = encrypted_pass		
 		final_table_data[j] = table_data
@@ -1053,5 +1054,378 @@ function thermal_submit(){
 	});
 	
 }
+
+
+
+function view_expense()
+{
+	USERNAME = $('#USERNAME').val();
+	STATUS = $('#STATUS').val();
+	if ($('#USERNAME').val()=="")
+	{
+		alert("Please select USERNAME");
+		return;
+	}
+	if ($('#STATUS').val()=="")
+	{
+		alert("Please select STATUS");
+		return ;
+	}
+	
+	basic_details={}
+	basic_details['STATUS']        = $('#STATUS').val();
+	basic_details['USERNAME']      = $('#USERNAME').val();
+	basic_details['Expensetype']   = $('#Expensetype').val();
+	basic_details['company_name']  = $('#company_name').val();
+	
+	$("#expense_submit_button").hide();	
+	$.getJSON('/get_expense_sheet', 
+	{
+		params_data : JSON.stringify(basic_details)
+	}, function(result) 
+	{
+		record_list =  result['expense_list']
+		var approvedamount  = 0	
+		var deniedamount    = 0	
+		$('#EXPENSETABLE').empty();
+		var header='<tr>\
+				 <th>Request ID</th><th>Expense Type</th><th>Company Name</th>\
+				 <th>Description</th><th>Amount Requested</th><th>Amount Approved</th><th>Date</th>\
+				<th>Status</th></tr>'
+		$('#EXPENSETABLE').append(header);
+		for(var j = 0; j<record_list.length; j++)
+		{	var company_name=record_list[j].company_name;
+			var Expensetype=record_list[j].Expensetype;
+			var Description=record_list[j].Description;
+	        company_name = company_name.split(' ').join('\xa0');
+			Expensetype  = Expensetype.split(' ').join('\xa0');
+			Description  = Description.split(' ').join('\xa0');
+	        
+			if ( ($('#STATUS').val()=="APPROVED")  ||($('#STATUS').val()=="DENIED"))
+			{	
+			var temp = '<tr id="myTableRow" name="myTableRow">\
+			<td><input type="text" name="request_id" value='+record_list[j].request_id+' class="textfield" disabled></td>\
+			<td><input type="text" name="Expensetype" value='+Expensetype+' class="textfield" disabled></td>\
+			<td><input type="text" name="company_name" value='+company_name+' class="textfield" disabled></td>\
+			<td><input type="text" name="Description" value='+Description+' class="textfield" disabled></td>\
+			<td><input type="text" name="Amount_requested" value='+record_list[j].Amount_requested+' class="textfield" disabled></td>\
+			<td><input type="text" name="Amount_approved" value='+record_list[j].Amount_approved+' class="textfield" disabled ></td>\
+			<td><input type="text" name="date" value='+record_list[j].date+' class="textfield" disabled></td>\
+			<td>\
+			<select class="textfield" name="STATUS" id="STATUS" style="width:100%" disabled>\
+			<option value="">Select an option</option>\
+			<option value="APPROVED">APPROVED</option>\
+			<option value="DENIED">DENIED</option>\
+			</select>\
+			</td>\
+			</tr>'
+			approvedamount = parseFloat(approvedamount)+parseFloat(record_list[j].Amount_requested);
+			deniedamount   = parseFloat(deniedamount)+parseFloat(record_list[j].Amount_approved);
+			}
+			else
+			{
+			$("#expense_submit_button").show();	
+			var temp = '<tr id="myTableRow" name="myTableRow">\
+			<td><input type="text" name="request_id" value='+record_list[j].request_id+' class="textfield" disabled></td>\
+			<td><input type="text" name="Expensetype" value='+Expensetype+' class="textfield" disabled></td>\
+			<td><input type="text" name="company_name" value='+company_name+' class="textfield" disabled></td>\
+			<td><input type="text" name="Description" value='+Description+' class="textfield" disabled></td>\
+			<td><input type="text" name="Amount_requested" value='+record_list[j].Amount_requested+' class="textfield" disabled></td>\
+			<td><input type="text" name="Amount_approved" value='+record_list[j].Amount_requested+' class="textfield" ></td>\
+			<td><input type="text" name="date" value='+record_list[j].date+' class="textfield" disabled></td>\
+			<td>\
+			<select class="textfield" name="STATUS" id="STATUS" style="width:100%">\
+			<option value="APPROVED">APPROVE</option>\
+			<option value="REQUESTED">REQUESTED</option>\
+			<option value="DENIED">DENIED</option>\
+			</select>\
+			</td>\
+			</tr>'
+			approvedamount = parseFloat(approvedamount)+parseFloat(record_list[j].Amount_requested);
+			deniedamount   = parseFloat(approvedamount)+parseFloat(record_list[j].Amount_requested);
+			}
+			$('#EXPENSETABLE tr:last').after(temp);		
+		}		
+		$('#approved').val(approvedamount)
+		if ($('#STATUS').val()=="REQUESTED")
+		{
+			$('#declined').val(0)
+		}
+		else
+		{
+			$('#declined').val(parseFloat(approvedamount)-parseFloat(deniedamount))
+		}
+		
+	});
+	
+}
+
+
+function submit_expense()
+{
+	code_tbl = document.getElementsByClassName("code_tbl")[1]
+	code_rows = code_tbl.rows	
+	for(var j = 1; j<code_rows.length; j++)
+	{
+		tds = code_rows[j].children		
+		if (tds[5].firstElementChild.value=="")
+		{	
+				alert("Filter Amount Approved cannot be blank in row : "+j);
+				return;
+		}	
+
+        if (tds[7].firstElementChild.value=="")
+		{	
+				alert("Filter Status cannot be blank in row : "+j);
+				return;
+		}	
+	}	
+	
+	var final_table_data = {};
+    var full_data = {};	
+	for(var j = 1; j<code_rows.length; j++)
+	{
+		tds = code_rows[j].children	
+		var table_data = {};
+		table_data['request_id']  = tds[0].firstElementChild.value 		
+		table_data['Amount_approved'] = tds[5].firstElementChild.value 
+		table_data['STATUS']  = tds[7].firstElementChild.value	
+		final_table_data[j] = table_data
+	}
+	
+	full_data['observation']=final_table_data	
+	$.getJSON('/submit_expense', 
+	{
+		params_data : JSON.stringify(full_data)
+	}, function(result) 
+	{
+		alert("Expense Request Updated");		
+		window.location.reload();
+	});
+	
+	
+	
+}
+
+function submit_request_expense()
+{
+	code_tbl = document.getElementsByClassName("code_tbl")[0]
+	code_rows = code_tbl.rows	
+	for(var j = 1; j<code_rows.length; j++)
+	{
+		tds = code_rows[j].children		
+		if (tds[0].firstElementChild.value=="")
+		{	
+				alert("Filter Expense Type cannot be blank in row : "+j);
+				return;
+		}	
+
+        if (tds[1].firstElementChild.value=="")
+		{	
+				alert("Filter Company Name cannot be blank in row : "+j);
+				return;
+		}
+
+		if (tds[2].firstElementChild.value=="")
+		{	
+				alert("Filter Description cannot be blank in row : "+j);
+				return;
+		}	
+		
+		if (tds[3].firstElementChild.value=="")
+		{	
+				alert("Filter Amount cannot be blank in row : "+j);
+				return;
+		}	
+	}	
+	
+	var final_table_data = {};
+    var full_data = {};	
+	for(var j = 1; j<code_rows.length; j++)
+	{
+		tds = code_rows[j].children	
+		var table_data = {};
+		table_data['Expensetype']  = tds[0].firstElementChild.value 		
+		table_data['company_name'] = tds[1].firstElementChild.value 
+		table_data['Description']  = tds[2].firstElementChild.value	
+		table_data['Amount']       = tds[3].firstElementChild.value		
+		final_table_data[j] = table_data
+	}
+	
+	full_data['observation']=final_table_data
+	
+	$.getJSON('/raise_expense', 
+	{
+		params_data : JSON.stringify(full_data)
+	}, function(result) 
+	{
+		alert("Expense Request Raised");		
+		window.location.reload();
+	});
+	
+	
+	
+}
+
+
+$('#EXPENSETABLE').on('change', 'input', function () 
+{
+    var req  = 0
+    var appr  = 0
+    var requested  =0
+	var approvedamount =0
+    code_tbl = document.getElementsByClassName("code_tbl")[1]
+	code_rows = code_tbl.rows	
+	for(var j = 1; j<code_rows.length; j++)
+	{
+		tds = code_rows[j].children	
+        req  = tds[4].firstElementChild.value	
+		appr = tds[5].firstElementChild.value
+		requested = parseFloat(requested)+parseFloat(req);
+		if (tds[0].firstElementChild.value=="")
+		{	
+				alert("Filter Expense Type cannot be blank in row : "+j);
+				return;
+		}	
+		else
+		{
+			approvedamount   = parseFloat(approvedamount)+parseFloat(appr);
+		}
+	}	
+	
+	$('#approved').val(approvedamount)
+	$('#declined').val(parseFloat(requested)-parseFloat(approvedamount))
+	
+	
+	
+});
+
+
+function view_user_details()
+{
+	USERNAME = $('#USERNAME').val();
+	if ($('#USERNAME').val()=="")
+	{
+		alert("Please select USERNAME");
+		return;
+	}	
+	basic_details={}
+	basic_details['USERNAME'] = $('#USERNAME').val();
+	$.getJSON('/get_user_detail_by_userID_sheet', 
+	{
+		params_data : JSON.stringify(basic_details)
+	}, function(result) 
+	{
+		var record_list =  result['user_list'][0]
+		$('#USERTABLE').empty();
+		var header='<tr>\
+				 <th>Role</th><th>Username</th><th>First Name</th>\
+				 <th>Last Name</th><th>Email ID</th><th>Status</th></tr>'
+		$('#USERTABLE').append(header);
+		
+	
+		var temp = '<tr id="myTableRow" name="myTableRow">\
+		<td><select class="textfield" name="ROLE" id="ROLE" style="width:100%">'
+		
+		if (record_list.ROLE=="admin")
+		{
+			temp =temp +'<option value="admin" selected>Admin</option>'
+			temp =temp +'<option value="analyst" >Service</option>'
+			temp =temp +'<option value="operation" >Operation</option>'
+			temp =temp+'</select></td>'
+		}
+		if (record_list.ROLE=="analyst")
+		{
+			temp =temp +'<option value="admin" >Admin</option>'
+			temp =temp +'<option value="analyst" selected >Service</option>'
+			temp =temp +'<option value="operation" >Operation</option>'
+			temp =temp+'</select></td>'
+		}
+		if (record_list.ROLE=="operation")
+		{
+			temp =temp +'<option value="admin" >Admin</option>'
+			temp =temp +'<option value="analyst" >Service</option>'
+			temp =temp +'<option value="operation" selected>Operation</option>'
+			temp =temp+'</select></td>'
+		}
+		
+		temp=temp+'<td><input type="text" name="Username" id="Username" value='+record_list.USERNAME+' class="textfield" disabled></td>\
+		<td><input type="text" name="FirstNAME" id="FirstNAME" value='+record_list.FNAME+' class="textfield" ></td>\
+		<td><input type="text" name="LastNAME" id="LastNAME" value='+record_list.LNAME+' class="textfield" ></td>\
+		<td><input type="text" name="emaild" id="emaild" value='+record_list.EMAILID+' class="textfield" ></td>\
+		<td>\
+		<select class="textfield" name="STATUS" id="STATUS" style="width:100%">\
+		'	
+		if (record_list.STATUS=="ACTIVE")
+		{
+			temp =temp +'<option value="ACTIVE" selected>ACTIVE</option>'
+			temp =temp +'<option value="INACTIVE" >INACTIVE</option>'
+		}
+		else
+		{
+			temp =temp +'<option value="ACTIVE" >ACTIVE</option>'
+			temp =temp +'<option value="INACTIVE" selected>INACTIVE</option>'
+		}
+
+		temp =temp+'</select></td></tr>'
+		$('#USERTABLE tr:last').after(temp);		
+				
+		
+		
+	});
+	
+}
+
+
+function update_user_details()
+{
+	if ($('#FirstNAME').val()=="")
+	{
+		alert("Please Enter First Name");
+		return;
+	}	
+	if ($('#LastNAME').val()=="")
+	{
+		alert("Please Enter Lat Name");
+		return;
+	}
+	
+	basic_details={}
+	basic_details['USERNAME']  = $('#USERNAME').val();
+	basic_details['FirstNAME'] = $('#FirstNAME').val();
+	basic_details['LastNAME']  = $('#LastNAME').val();
+	basic_details['STATUS']    = $('#STATUS').val();
+	basic_details['ROLE']      = $('#ROLE').val();
+	basic_details['emaild']    = $('#emaild').val();
+	$.getJSON('/submit_update_user_details', 
+	{
+		params_data : JSON.stringify(basic_details)
+	}, function(result) 
+	{
+		alert("User Details Updated");		
+				
+		
+		
+	});
+	
+}
+
+function exportdb()
+{
+	$.getJSON('/export_db', 
+	{
+		params_data : JSON.stringify("")
+	}, function(result) 
+	{
+		var link = document.createElement('a')
+		link.href =result.file_path;
+		link.download = result.file_name;
+		link.dispatchEvent(new MouseEvent('click'));		
+	});
+	
+}
+
+
+
 
 
