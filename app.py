@@ -438,7 +438,7 @@ def submit_particle_report():
         temp_df       = pd.DataFrame.from_dict(observation,orient ='index')
         session_var = session['user']
         file_name,file_path=Report_Genration.generate_report_particle_count(temp_df,basic_details,session_var['user'],
-                                                                             EUGMP_guidlines,ISO_guidlines_master)
+                                                                             EUGMP_guidlines_master,ISO_guidlines_master)
         subject   = "Particle Count Automated Genrated Report - {}".format(company_name)
         text      = "Hi PinPoint Team \n\nPlease find attached automated Generated File {} for {} \n\nRegards \nAjeet Shukla :) :) :)".format(file_name,company_name)
         if sent_mail:

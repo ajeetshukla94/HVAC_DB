@@ -460,9 +460,10 @@ class Report_Genration:
         compan_name = compan_name.replace("/", "")
         compan_name = compan_name.replace(" ", "")
         print(gl_value)
-        
+        print(ISO_guidlines_master)
+        print(EUGMP_guidlines)
         if "ISO" in gl_value :    
-            trn    = ISO_guidlines_master.loc[  (ISO_guidlines_master['Grade']== grade)  ]    
+            trn    = ISO_guidlines_master[(ISO_guidlines_master['Grade']== grade)  ]    
         if "EU" in gl_value  :
             trn = EUGMP_guidlines[(EUGMP_guidlines['Condition'] == condition) & (EUGMP_guidlines['Grade'] == grade)]
         print(trn)
