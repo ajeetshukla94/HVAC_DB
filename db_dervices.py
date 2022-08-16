@@ -297,7 +297,7 @@ class DBO:
     def selected_instrument_dropdown(self,TYPE,ISSUED_TO):
         try:
             stmt = """SELECT * from equipment_master where
-            status='APPROVED' and Type='{}' and ISSUED_TO='{}'""".format(TYPE,ISSUED_TO)
+            status='APPROVED' and Type='{}' """.format(TYPE,ISSUED_TO)
             cursor = self.conn.execute(stmt)
             equipment_list = []
             for row in cursor:
@@ -306,6 +306,7 @@ class DBO:
             return equipment_frame
             
         except Exception as e:
+            print(e)
             return e       
 
     def request_for_equipment(self,SR_NO_ID,company_name,REMARK,ISSUED_TO):

@@ -204,8 +204,11 @@ def render_paotest():
     if 'user' in session:
         session_var = session['user']
         role = session_var["role"]
+        print(session_var['username'])
+        
         company_name_list             = dbo.selected_instrument_dropdown("PAO_TEST",session_var['username']).COMPANY_NAME.unique().tolist()
         equipment_list = dbo.selected_instrument_dropdown("PAO_TEST",session_var['username']).SR_NO_ID.unique().tolist()
+        print(company_name_list)
         return make_response(render_template('HVAC_UI/PAO.html',company_list=company_name_list,
                                 equipment_list =equipment_list, role = role),200)
     return make_response(render_template('LOGIN_PAGE/login.html'),200)
