@@ -478,7 +478,7 @@ class Report_Genration:
 
         wb = load_workbook(os.path.join("static/inputData/Template/",'particle_count_template.xlsx'))
         ws = wb.active
-        ws.protection.sheet = True
+        #ws.protection.sheet = True
 
         # Data can be assigned directly to cells
         ws['F3'] = str(company_name_val)
@@ -487,16 +487,16 @@ class Report_Genration:
         ws['F6'] = str(Test_taken)
         ws['F7'] = str(ahu_number)
         ws['F8'] = str(location)
-        ws['F9'] = str(done_date).replace("-", "/")
-        ws['F10'] = str(due_date).replace("-", "/")
-        ws['F11'] = str("PPE0{}AV01A".format(report_number))
+        #ws['F9'] = str(done_date).replace("-", "/")
+        #ws['F10'] = str(due_date).replace("-", "/")
+        ws['F9'] = str("PPE0{}AV01A".format(report_number))
 
-        ws['B17'] = str(INSTRUMENT_NAME)
-        ws['E17'] = str(MAKE_MODEL)
-        ws['I17'] = str(SRNO)
-        ws['M17'] = str(VALIDITY.replace("-", "/"))
+        ws['B15'] = str(INSTRUMENT_NAME)
+        ws['E15'] = str(MAKE_MODEL)
+        ws['I15'] = str(SRNO)
+        ws['M15'] = str(VALIDITY.replace("-", "/"))
 
-        row = 23
+        row = 21
 
         for row_data in data.itertuples():
             ws.merge_cells(start_row=row, start_column=6, end_row=row, end_column=7)
@@ -521,13 +521,13 @@ class Report_Genration:
 
             row += 1
 
-        ws.merge_cells(start_row=23, start_column=4, end_row=row - 1, end_column=5)
-        ws['D23'] = room_name
-        ws.merge_cells(start_row=23, start_column=2, end_row=row - 1, end_column=3)
+        ws.merge_cells(start_row=21, start_column=4, end_row=row - 1, end_column=5)
+        ws['D21'] = room_name
+        ws.merge_cells(start_row=21, start_column=2, end_row=row - 1, end_column=3)
         ws['B23'] = "1"
-        currentCell = ws['B23']
+        currentCell = ws['B21']
         currentCell.alignment = Alignment(horizontal='center', vertical='center')
-        currentCell = ws['D23']
+        currentCell = ws['D21']
         currentCell.alignment = Alignment(horizontal='center', vertical='center')
         data.zeor_point_five = data.zeor_point_five.astype("float")
         data.five_point_zero = data.five_point_zero.astype("float")
