@@ -3,6 +3,7 @@ from flask import Flask, render_template, flash, url_for, request, make_response
 from werkzeug.utils import secure_filename
 import os, time
 import io
+import pytz
 import base64
 import json
 import datetime
@@ -29,6 +30,7 @@ import pandas as pd
 import numpy as np
 import datetime
 import random
+from dateutil.tz import gettz
 
 dbo          =  DBO()
 MYDIR        = os.path.dirname(__file__)
@@ -125,20 +127,18 @@ class Report_Genration:
         ws['F6'] = str(Test_taken)
         ws['F7'] = str(ahu_number)
         ws['F8'] = str(location)
-        ws['F9'] = str(done_date).replace("-", "/")
-        ws['F10'] = str(due_date).replace("-", "/")
-        ws['F11'] = str("PPE0{}AV01A".format(report_number))
+        ws['F9'] = str("PPE0{}AV01A".format(report_number))
 
-        ws['B17'] = str(INSTRUMENT_NAME)
-        ws['E17'] = str(MAKE_MODEL)
-        ws['I17'] = str(SRNO)
-        ws['M17'] = str(VALIDITY.replace("-", "/"))
+        ws['B15'] = str(INSTRUMENT_NAME)
+        ws['E15'] = str(MAKE_MODEL)
+        ws['I15'] = str(SRNO)
+        ws['M15'] = str(VALIDITY.replace("-", "/"))
 
-        ws.merge_cells(start_row=23, start_column=2, end_row=23, end_column=3)
+        ws.merge_cells(start_row=21, start_column=2, end_row=21, end_column=3)
         # ws.merge_cells(start_row=23, start_column=3, end_row=23, end_column=4)
-        ws.merge_cells(start_row=23, start_column=15, end_row=23, end_column=16)
+        ws.merge_cells(start_row=21, start_column=15, end_row=21, end_column=16)
 
-        row = 24
+        row = 22
         data['AVG_Velocity'] = data.apply(sum_velocty, axis=1)
         if grade=="A":
             data['CFM'] = data.apply(lambda x: int(x['AVG_Velocity']), axis=1)
@@ -173,25 +173,24 @@ class Report_Genration:
         
             row += 1
 
-        ws.merge_cells(start_row=24, start_column=2, end_row=row - 1, end_column=3)
-        ws['B24'] = room_name
+        ws.merge_cells(start_row=22, start_column=2, end_row=row - 1, end_column=3)
+        ws['B22'] = room_name
         
         if grade=="A":
             pass
         else:
-            ws.merge_cells(start_row=24, start_column=14, end_row=row - 1, end_column=14)
-            ws['N24'] = room_volume
+            ws.merge_cells(start_row=22, start_column=14, end_row=row - 1, end_column=14)
+            ws['N22'] = room_volume
+            ws.merge_cells(start_row=22, start_column=15, end_row=row - 1, end_column=16)
+            ws['O22'] = ACPH_VALUE
 
-        ws.merge_cells(start_row=24, start_column=14, end_row=row - 1, end_column=16)
-        ws['N24'] = ACPH_VALUE
-
-        currentCell = ws['B24']
+        currentCell = ws['B22']
         currentCell.alignment = Alignment(horizontal='center', vertical='center')
 
-        currentCell = ws['N24']
+        currentCell = ws['N22']
         currentCell.alignment = Alignment(horizontal='center', vertical='center')
 
-        currentCell = ws['O24']
+        currentCell = ws['O22']
         currentCell.alignment = Alignment(horizontal='center', vertical='center')
 
         ws.merge_cells(start_row=row, start_column=2, end_row=row, end_column=12)
@@ -243,7 +242,7 @@ class Report_Genration:
         ws.merge_cells(start_row=(row + 8), start_column=2, end_row=(row + 8), end_column=7)
         ws.merge_cells(start_row=(row + 8), start_column=8, end_row=(row + 8), end_column=16)
 
-        ws["B" + str(row + 8)] = "PIN POINT ENGINEER"
+        ws["B" + str(row + 8)] = "PIN POINT ENGINEERS"
 
         currentCell = ws["B" + str(row + 8)]
         currentCell.alignment = Alignment(horizontal='center', vertical='top')
@@ -254,8 +253,13 @@ class Report_Genration:
         currentCell.alignment = Alignment(horizontal='center', vertical='top')
         #######################################
         ws.merge_cells(start_row=(row + 9), start_column=2, end_row=(row + 9), end_column=16)
+        
+       
+        testtime = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
+        testtime = str(testtime).split(".")[0]
 
-        ws["B" + str(row + 9)] = "Test Carried out by {} on {}".format(user,datetime.datetime.today().strftime('%d/%m/%Y %H:%M:%S'))
+        ws["B" + str(row + 9)] = "Test Carried out by {} on {}".format(user, testtime)
+        
 
 
 
@@ -647,7 +651,7 @@ class Report_Genration:
         
         ws.merge_cells(start_row=(row + 9), start_column=2, end_row=(row + 9), end_column=16)
 
-        ws["B" + str(row + 9)] = "Test Carried out by {} on {}".format(user,datetime.datetime.today().strftime('%d/%m/%Y %H:%M:%S'))
+        ws["B" + str(row + 9)] = "Test Carried out by {} on {}".format(user,datetime.datetime.today(pytz.UTC).strftime('%d/%m/%Y %H:%M:%S'))
 
         set_border(ws, 'B1:P' + str(row + 8))
         set_border(ws, 'B1:P' + str(1))
