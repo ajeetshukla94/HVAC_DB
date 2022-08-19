@@ -33,7 +33,7 @@ class MyFooter extends HTMLElement{
 	
 	connectedCallback()	{
 		this.innerHTML ='<div id="footer">\
-			<h6 id="footer-text">Copyright &#169; Pin Point Engineers</h6>\
+			<h6 id="footer-text">Developed By &#169; Pin Point Engineers</h6>\
 		</div>\
 		'
 	}

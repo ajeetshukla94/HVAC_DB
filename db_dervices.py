@@ -298,7 +298,7 @@ class DBO:
         try:
             stmt = """SELECT * from equipment_master where
             status='APPROVED' and Type='{}' """.format(TYPE,ISSUED_TO)
-            stmt = """SELECT * from equipment_master """
+          
                       
             cursor = self.conn.execute(stmt)
             equipment_list = []
