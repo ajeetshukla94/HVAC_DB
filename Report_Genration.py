@@ -157,17 +157,22 @@ class Report_Genration:
             ws["D" + str(row)] = row_data.Label_number
             currentCell = ws["D" + str(row)]
             currentCell.alignment = Alignment(horizontal='center', vertical='center')
-            ws["F" + str(row)] = row_data.V1
-            ws["G" + str(row)] = row_data.V2
-            ws["H" + str(row)] = row_data.V3
-            ws["I" + str(row)] = row_data.V4
-            ws["J" + str(row)] = row_data.V5
-            ws["K" + str(row)] = row_data.AVG_Velocity
+          
             if grade=="A":
+                ws["E" + str(row)] = row_data.V1
+                ws["G" + str(row)] = row_data.V2
+                ws["I" + str(row)] = row_data.V3
+                ws["K" + str(row)] = row_data.V4
+                ws["M" + str(row)] = row_data.V5
+                ws["O" + str(row)] = row_data.AVG_Velocity
 
-                ws.merge_cells(start_row=row, start_column=12, end_row=row, end_column=13)
-                ws["L" + str(row)] = row_data.CFM
             else:
+                ws["F" + str(row)] = row_data.V1
+                ws["G" + str(row)] = row_data.V2
+                ws["H" + str(row)] = row_data.V3
+                ws["I" + str(row)] = row_data.V4
+                ws["J" + str(row)] = row_data.V5
+                ws["K" + str(row)] = row_data.AVG_Velocity
                 ws["L" + str(row)] = row_data.Inlet_size
                 ws["M" + str(row)] = row_data.CFM
         
@@ -194,14 +199,14 @@ class Report_Genration:
         currentCell.alignment = Alignment(horizontal='center', vertical='center')
 
         ws.merge_cells(start_row=row, start_column=2, end_row=row, end_column=12)
-        ws["B" + str(row)] = "TOTAL CFM"
+        if grade!="A":
+           ws["B" + str(row)] = "TOTAL CFM"
+           currentCell = ws["B" + str(row)]
+           currentCell.alignment = Alignment(horizontal='right', vertical='center')
 
-        currentCell = ws["B" + str(row)]
-        currentCell.alignment = Alignment(horizontal='right', vertical='center')
-
-        ws.merge_cells(start_row=row, start_column=13, end_row=row, end_column=13)
-        ws["M" + str(row)] = Total_cfm
-        ws.merge_cells(start_row=row, start_column=15, end_row=row, end_column=16)
+           ws.merge_cells(start_row=row, start_column=13, end_row=row, end_column=13)
+           ws["M" + str(row)] = Total_cfm
+           ws.merge_cells(start_row=row, start_column=15, end_row=row, end_column=16)
 
         row = row + 1
 
@@ -256,12 +261,9 @@ class Report_Genration:
         
        
         testtime = datetime.datetime.now(tz=gettz('Asia/Kolkata'))
-        testtime = str(testtime).split(".")[0]
+        testtime = str(testtime.strftime('%d/%m/%Y %H:%M:%S')).split(".")[0]
 
         ws["B" + str(row + 9)] = "Test Carried out by {} on {}".format(user, testtime)
-        
-
-
 
         set_border(ws, 'B1:P' + str(row + 9))
         set_border(ws, 'B1:P' + str(1))
